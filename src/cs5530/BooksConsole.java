@@ -372,7 +372,7 @@ public class BooksConsole {
 				{
 					for(Author a : authors)
 					{
-						if(a.insertAuthor())
+						if(a.Insert() != null)
 						{
 							a.insertAuthorBookRelation(isbn);
 						}

@@ -1,2 +1,5 @@
 src/cs5530/Connector.java
-
+.project
+.settings
+.DS_Store
+.classpath
