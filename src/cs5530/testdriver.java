@@ -34,7 +34,9 @@ public class testdriver {
 			
 //			AuthorGetBooksBy();
 //			searchByAuthor();
-			uniqueLogin();
+//			searchByTitle();
+			searchByGenre();
+//			uniqueLogin();
 			
 		}
 		catch (Exception e)
@@ -84,7 +86,28 @@ public class testdriver {
 	
 	public static void searchByAuthor() {
 		Book b = new Book();
-		b.searchByAuthor("Collins Suz", 0);
+		b.searchByAuthor("fitz", 0);
+		System.out.println(b.lastQueryToString());
+		
+		User u = new User("bush", "");
+		b.searchByAuthorTrusted("Fitzgerald", 3, User.trustedUsersSQL(u.login));
+		System.out.println(b.lastQueryToString());
+	}
+	
+	public static void searchByTitle() {
+		Book b = new Book();
+		User u = new User("bush", "");
+		b.searchByTitleTrusted("", 3, User.trustedUsersSQL(u.login));
+		System.out.println(b.lastQueryToString());
+	}
+	
+	public static void searchByGenre() {
+		Book b = new Book();
+		User u = new User("bush", "");
+		b.searchByGenreTrusted("jazz", 3, User.trustedUsersSQL(u.login));
+		System.out.println(b.lastQueryToString());
+		
+		b.searchByGenre("teen", 2);
 		System.out.println(b.lastQueryToString());
 	}
 	

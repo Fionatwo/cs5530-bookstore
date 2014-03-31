@@ -117,6 +117,71 @@ public class Book extends DatabaseModel{
 		return primaryKey.get("ISBN");
 	}
 	
+	/**
+	 * select * from Books b natural left join
+	 * (select * from Books_AvgRating bavg natural join
+	 * -- Gets avg trusted reviews for user batman
+	 * (select r.ISBN, AVG(r.Score) as TrustRating from Reviews r join Trusts t
+	 * on r.Login=t.Trustee and t.Assessment=true and t.Truster='bush' group by r.ISBN) 
+	 * as t0) as main2
+	 * where
+	 * ISBN IN (SELECT ISBN FROM Authored_By WHERE aid IN
+	 * (SELECT aid FROM Authors where FirstName like '%%' and LastName like '%%'))
+	 * 
+	 * @param key
+	 * @param sort
+	 * @param trustedUsers
+	 * @return
+	 */
+	public ArrayList<HashMap<String, String>> searchByAuthorTrusted(String key, int sort, String trustedUsers) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		
+ 		//begin the statement
+ 		sql = "select * from " + table + " b natural left join ";
+ 		sql += "(select * from Books_AvgRating bavg natural join ";
+ 		sql += "("+trustedUsers+") as TrustedUsers) as AllRatings ";
+ 		if(words.length > 0)
+ 		{
+ 			sql += "where ";
+ 			sql += "ISBN IN (SELECT ISBN FROM Authored_By WHERE aid IN "; 
+ 			sql += "(SELECT aid FROM Authors where ";
+ 			
+ 			//for each word after the first
+ 			for ( String s : words )
+ 			{
+ 				sql += "(FirstName like ";
+ 				sql += "'%"+s+"%'";
+ 				sql += " or LastName like ";
+ 				sql += "'%"+s+"%') and ";
+ 			}
+ 			int i = sql.lastIndexOf(" and ");
+ 			sql=sql.substring(0, i);
+ 			sql += "))"; //end the sql statement
+ 		}
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		case 3:
+			end = " ORDER BY TrustRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return CustomQuery(sql+end);
+	}
+	
 	public ArrayList<HashMap<String, String>> searchByAuthor(String key, int sort) {
 		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
 		String sql = ""; //initialize the sql string
@@ -124,7 +189,10 @@ public class Book extends DatabaseModel{
  		String[] words = key.split("\\s+"); //split the input into an array of words
  		
  		//start the sql statement
- 		sql = "select * from " + table + " where ISBN IN (SELECT ISBN FROM Authored_By WHERE aid IN "; 
+ 		
+ 		//begin the statement
+ 		sql = "Select * from " + table + " natural join ";
+ 		sql += "(select * from " + "Books_AvgRating bavg" + " where ISBN IN (SELECT ISBN FROM Authored_By WHERE aid IN "; 
  		sql += "(SELECT aid FROM Authors where ";
  		
  		//for each word after the first
@@ -137,7 +205,228 @@ public class Book extends DatabaseModel{
 		}
 		int i = sql.lastIndexOf(" and ");
 		sql=sql.substring(0, i);
-		sql += "))"; //end the sql statement
+		sql += "))) as t"; //end the sql statement
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return CustomQuery(sql+end);
+	}
+	
+	public ArrayList<HashMap<String, String>> searchByGenreTrusted(String key, int sort, String trustedUsers) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		
+ 		//begin the statement
+ 		sql = "select * from " + table + " b natural left join ";
+ 		sql += "(select * from Books_AvgRating bavg natural join ";
+ 		sql += "("+trustedUsers+") as TrustedUsers) as AllRatings ";
+ 		if(words.length > 0)
+ 		{
+ 			sql += "where ";
+ 			sql += "ISBN IN (SELECT ISBN FROM Is_Genre WHERE gid IN "; 
+ 			sql += "(SELECT gid FROM Genres where ";
+ 			
+ 			//for each word after the first
+ 			for ( String s : words )
+ 			{
+ 				sql += "Genre like ";
+ 				sql += "'%"+s+"%' and ";
+ 			}
+ 			int i = sql.lastIndexOf(" and ");
+ 			sql=sql.substring(0, i);
+ 			sql += "))"; //end the sql statement
+ 		}
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		case 3:
+			end = " ORDER BY TrustRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return CustomQuery(sql+end);
+	}
+	
+	public ArrayList<HashMap<String, String>> searchByGenre(String key, int sort) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		
+ 		//begin the statement
+ 		sql = "Select * from " + table + " natural join ";
+ 		sql += "(select * from " + "Books_AvgRating bavg" + " where ISBN IN (SELECT ISBN FROM Is_Genre WHERE gid IN "; 
+ 		sql += "(SELECT gid FROM Genres where ";
+ 		
+ 		//for each word after the first
+		for ( String s : words )
+		{
+			sql += "Genre like ";
+			sql += "'%"+s+"%' and ";
+		}
+		int i = sql.lastIndexOf(" and ");
+		sql=sql.substring(0, i);
+		sql += "))) as t"; //end the sql statement
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return CustomQuery(sql+end);
+	}
+	
+	public ArrayList<HashMap<String, String>> searchByTitleTrusted(String key, int sort, String trustedUsers) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		sql = "select * from ";
+ 		sql += table + " b natural left join ";
+ 		sql += "(select * from Books_AvgRating bavg natural join ";
+ 		sql += "("+trustedUsers+") as TrustedUsers ";
+ 		sql += ") as main ";
+ 		if(words.length > 0)
+ 		{
+ 			sql += "where ";
+ 			
+ 			//for each word after the first
+ 			for ( String s : words )
+ 			{
+ 				sql += "Title like ";
+ 				sql += "'%"+s+"%' and ";
+ 			}
+ 			int i = sql.lastIndexOf(" and ");
+ 			sql=sql.substring(0, i);
+ 		}
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		case 3:
+			end = " ORDER BY TrustRating desc ";
+			break;
+		default:
+			end = " ORDER BY Title";
+			break;
+		}
+		return this.CustomQuery(sql+end);
+	}
+	
+	/**
+	 * select * from Books b natural left join
+	 * (select * from Books_AvgRating bavg natural join
+     * -- Gets avg trusted reviews for user batman
+	 * (select r.ISBN, AVG(r.Score) as TrustRating from Reviews r join Trusts t 
+	 * on r.Login=t.Trustee and t.Assessment=true and t.Truster='bush' group by r.ISBN) as t0) as main2
+	 * -- where title like '%potter%'
+	 * select * from Books b natural left join Books_AvgRating bavg where title like '%great%' and title like '%%'
+	 * @param key
+	 * @param sort
+	 * @return
+	 */
+	public ArrayList<HashMap<String, String>> searchByTitle(String key, int sort) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		sql = "select * from ";
+// 		sql += table + " b natural left join ";
+ 		sql += "Books_AvgRating bavg ";
+ 		if(words.length > 0)
+ 		{
+ 			sql += "where ";
+ 			
+ 			//for each word after the first
+ 			for ( String s : words )
+ 			{
+ 				sql += "Title like ";
+ 				sql += "'%"+s+"%') and ";
+ 			}
+ 			int i = sql.lastIndexOf(" and ");
+ 			sql=sql.substring(0, i);
+ 		}
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return CustomQuery(sql+end);
+	}
+	
+	public ArrayList<HashMap<String, String>> searchByPublisherTrusted(String key, int sort, String trustedUsers) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		sql = "select * from ";
+ 		sql += table + " b natural left join ";
+ 		sql += "(select * from Books_AvgRating bavg natural join ";
+ 		sql += "("+trustedUsers+") as TrustedUsers ";
+ 		sql += ") as main ";
+ 		if(words.length > 0)
+ 		{
+ 			sql += "where ";
+ 			
+ 			//for each word after the first
+ 			for ( String s : words )
+ 			{
+ 				sql += "Publisher like ";
+ 				sql += "'%"+s+"%' and ";
+ 			}
+ 			int i = sql.lastIndexOf(" and ");
+ 			sql=sql.substring(0, i);
+ 		}
 		
 		switch(sort)
 		{
@@ -155,6 +444,45 @@ public class Book extends DatabaseModel{
 			break;
 		}
 		return this.CustomQuery(sql+end);
+	}
+	
+	public ArrayList<HashMap<String, String>> searchByPublisher(String key, int sort) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		sql = "select * from ";
+// 		sql += table + " b natural left join ";
+ 		sql += "Books_AvgRating bavg ";
+ 		if(words.length > 0)
+ 		{
+ 			sql += "where ";
+ 			
+ 			//for each word after the first
+ 			for ( String s : words )
+ 			{
+ 				sql += "Publisher like ";
+ 				sql += "'%"+s+"%') and ";
+ 			}
+ 			int i = sql.lastIndexOf(" and ");
+ 			sql=sql.substring(0, i);
+ 		}
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return CustomQuery(sql+end);
 	}
 	
 //	/**

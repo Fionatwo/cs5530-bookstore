@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cs5530.db.BooksDB;
 
 
 /**
@@ -18,7 +17,7 @@ import cs5530.db.BooksDB;
  * @organization University of Utah
  * @since Spring 2014
  *
- * The console interface with the BooksDB module.
+ * The console interface to books in the database.
  */
 public class BooksConsole {
 	
@@ -68,17 +67,9 @@ public class BooksConsole {
 					break;
 				case 6:
 					/* LIST BY TITLE */
-					ArrayList<Book> result = BooksDB.listByTitle();
-					if(result.isEmpty())
-					{
-						System.out.println("Sorry, no results");
-					}
-					Iterator<Book> iBook = result.iterator();
-					while(iBook.hasNext())
-					{
-						Book b = iBook.next();
-//						System.out.println(b.toString(true));
-					}
+					Book b = new Book();
+					ArrayList<HashMap<String, String>> result = b.searchByTitleTrusted("", 0, User.trustedUsersSQL(login));
+					System.out.println(b.lastQueryToString());
 					break;
 				case 7:
 					 /* LIST BY AUTHOR */
@@ -171,20 +162,21 @@ public class BooksConsole {
 			catch(Exception e){
 				System.out.println("Invalid selection.");
 			}
+			Book book = new Book();
 			ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>(); //arraylist to store the results
 			switch(column.toLowerCase()) //switch on field
 			{
 			case "author":
-				result = new Book().searchByAuthor(keywords, sort); //search by author
+				result = book.searchByAuthorTrusted(keywords, sort, User.trustedUsersSQL(login)); //search by author
 				break;
 			case "title":
-				result = new Book().searchByTitle(keywords, sort, User.trustedUsersSQL(login)); //search by title
+				result = book.searchByTitleTrusted(keywords, sort, User.trustedUsersSQL(login)); //search by title
 				break;
 			case "genre":
-//				result = BooksDB.searchByGenre(keywords, sort); //search by genre
+				result = book.searchByGenreTrusted(keywords, sort, User.trustedUsersSQL(login));
 				break;
 			case "publisher":
-//				result = BooksDB.searchByPublisher(keywords, sort); //search by publisher
+				result = book.searchByPublisherTrusted(keywords, sort, User.trustedUsersSQL(login));
 				break;
 			}
 			
@@ -197,20 +189,8 @@ public class BooksConsole {
 			 		return;
 			 	}
 			}
-			//Print a tabified header for output
-			String header = "-#-\t-ISBN-\t\t-Title-\t\t-Year-\t-Publisher-\t-Language-\t-Format-\t-Price-\t-Copies-\t-Avg Rating-";
-			System.out.println(header);
 			
-			//Create iterator for book results
-			Iterator<Book> iBooks = result.iterator();
-			
-			//Print all content of each book.
-			int count = 0;
-			while(iBooks.hasNext())
-			{
-				Book b = iBooks.next();
-//				System.out.println(count + "\t" + b.toString(true));
-			}
+			System.out.println(book.lastQueryToString());
 			
 			//Prompt to continue
 			System.out.println("  --  Press Enter to continue --  "); 

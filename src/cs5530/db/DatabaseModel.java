@@ -233,7 +233,8 @@ public class DatabaseModel {
 			while(iCol.hasNext())
 			{
 				String col = iCol.next();
-				out += col + ": " + row.get(col) + "\n";
+				String val = row.get(col);
+				out += val == null ? col + ": N/A \n" : col + ": " + row.get(col) + "\n";
 			}
 			count++;
 		}
