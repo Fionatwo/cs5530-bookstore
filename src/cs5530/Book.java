@@ -1,6 +1,8 @@
 package cs5530;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import cs5530.db.DatabaseModel;
 
@@ -104,6 +106,55 @@ public class Book extends DatabaseModel{
 		this.format = format;
 		this.price = price;
 		this.copies = copies;
+	}
+	
+	public String getISBN()
+	{
+		if(primaryKey.get("ISBN") == null)
+		{
+			this.queryKey();
+		}
+		return primaryKey.get("ISBN");
+	}
+	
+	public ArrayList<HashMap<String, String>> searchByAuthor(String key, int sort) {
+		lastQueryResult = new ArrayList<HashMap<String, String>>(); //to store the results
+		String sql = ""; //initialize the sql string
+		String end = "";
+ 		String[] words = key.split("\\s+"); //split the input into an array of words
+ 		
+ 		//start the sql statement
+ 		sql = "select * from " + table + " where ISBN IN (SELECT ISBN FROM Authored_By WHERE aid IN "; 
+ 		sql += "(SELECT aid FROM Authors where ";
+ 		
+ 		//for each word after the first
+		for ( String s : words )
+		{
+			sql += "(FirstName like ";
+			sql += "'%"+s+"%'";
+			sql += " or LastName like ";
+			sql += "'%"+s+"%') and ";
+		}
+		int i = sql.lastIndexOf(" and ");
+		sql=sql.substring(0, i);
+		sql += "))"; //end the sql statement
+		
+		switch(sort)
+		{
+		case 1:
+			end = " ORDER BY Year";
+			break;
+		case 2:
+			end = " ORDER BY AvgRating desc ";
+			break;
+		case 3:
+			end = " ORDER BY TrustRating desc ";
+			break;
+		default:
+			end = "";
+			break;
+		}
+		return this.CustomQuery(sql+end);
 	}
 	
 //	/**

@@ -2,6 +2,7 @@ package cs5530;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import cs5530.db.*;
 
@@ -48,11 +49,30 @@ public class Author extends DatabaseModel{
 	 * gets the aid property. The aid is the Author ID from the
 	 * Authors table of the database.
 	 * 
-	 * @return int aid
+	 * @return String aid
 	 */
-	public int getAid()
+	public String getAid()
 	{
-		return this.aid;
+		if(primaryKey.get("aid") == null)
+		{
+			this.queryKey();
+		}
+		return primaryKey.get("aid");
+	}
+	
+	public ArrayList<HashMap<String,String>> getBooksBy() {
+		if(primaryKey == null || this.first == null || this.last == null)
+		{
+			queryKey();
+		}
+		String sql = "Select * from Books where ISBN IN ";
+		sql += "(SELECT ISBN from Authored_By where aid IN ";
+		sql += "(Select aid FROM Authors where ";
+		sql += "FirstName like ";
+		sql += "'%"+this.first+"%'";
+		sql += "or LastName like ";
+		sql += "'%"+this.last+"%'))";
+		return this.CustomQuery(sql);
 	}
 	
 	/**

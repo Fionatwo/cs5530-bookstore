@@ -32,8 +32,9 @@ public class testdriver {
 //			DatabaseModel db = new DatabaseModel("Books", cols, vals);
 			
 			
-			AuthorQuery();
-			
+//			AuthorGetBooksBy();
+//			searchByAuthor();
+			uniqueLogin();
 			
 		}
 		catch (Exception e)
@@ -61,6 +62,12 @@ public class testdriver {
 		System.out.println(a.lastQueryToString());
 	}
 	
+	public static void AuthorGetBooksBy() {
+		Author a = new Author("J.K.", "Rowling");
+		a.getBooksBy();
+		System.out.println(a.lastQueryToString());
+	}
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	/* * * * * * * * * * * * * * * * * BOOKS * * * * * * * * * * * * * * * */
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -71,8 +78,35 @@ public class testdriver {
 	
 	public static void BookQuery() {
 		Book b = new Book();
+		b.Query("*", "where Title like '%the%'");
+		System.out.println(b.lastQueryToString());
+	}
+	
+	public static void searchByAuthor() {
+		Book b = new Book();
+		b.searchByAuthor("Collins Suz", 0);
+		System.out.println(b.lastQueryToString());
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * AUTHORED BY * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public static void AuthoredByInsert() {
+		Authored_By ab = new Authored_By("9780156027328", "17");
+		System.out.println(ab.Insert());
+	}
+	
+	public static void AuthoredByQuery() {
+		Book b = new Book();
 		ArrayList<HashMap<String, String>> r = b.Query("*", "where Title like '%the%'");
 		System.out.println(b.lastQueryToString());
 	}
-
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * USER * * *  * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public static void uniqueLogin() {
+		User u = new User("alex", "");
+		System.out.println(u.checkLoginExists());
+	}
 }

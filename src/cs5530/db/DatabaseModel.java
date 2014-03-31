@@ -115,7 +115,7 @@ public class DatabaseModel {
 				}
 				lastQueryResult.add(colVal);
 			}
-
+			
 			//close connection
 			prep.close();
 			con.closeConnection();
@@ -170,6 +170,48 @@ public class DatabaseModel {
 		HashSet<String> cols = new HashSet<String>();
 		cols.add(simpleColumns);
 		return Query_Work(cols, whereClause, orderClause);
+	}
+	
+
+	/**
+	 * Completely custom query.  Just pass the sql as a string.
+	 * It returns an ArrayList of HashMaps.  Each HashMap is a map of Column
+	 * value pairs and each occurrence in the ArrayList is a row.
+	 * 
+	 * @param cols
+	 * @param whereClause
+	 * @return ArrayList of HashMaps, the result data of the query
+	 */
+	public ArrayList<HashMap<String, String>> CustomQuery(String sql) {
+		try{
+			System.out.println("executing: " + sql);
+			Connector con = new Connector();
+			PreparedStatement prep = con.con.prepareStatement(sql);
+			lastQueryResult = new ArrayList<HashMap<String, String>>();
+			ResultSet rs = prep.executeQuery();
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int numCols = rsmd.getColumnCount();
+			while (rs.next())
+			{
+				HashMap<String, String> colVal = new HashMap<String, String>();
+				for (int i=1; i<=numCols;i++)
+				{
+					colVal.put(rsmd.getColumnLabel(i), rs.getString(i));
+				}
+				lastQueryResult.add(colVal);
+			}
+			
+			//close connection
+			prep.close();
+			con.closeConnection();
+
+			return lastQueryResult;
+		} catch (Exception e)
+		{
+			System.err.println("Unable to execute sql. The error is as follows,\n");
+			System.err.println(e.getMessage());
+			return null;
+		}
 	}
 	
 	/**

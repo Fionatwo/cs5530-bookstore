@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -170,14 +171,14 @@ public class BooksConsole {
 			catch(Exception e){
 				System.out.println("Invalid selection.");
 			}
-			ArrayList<Book> result = new ArrayList<Book>(); //arraylist to store the results
+			ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>(); //arraylist to store the results
 			switch(column.toLowerCase()) //switch on field
 			{
 			case "author":
-//				result = BooksDB.searchByAuthor(keywords, sort); //search by author
+				result = new Book().searchByAuthor(keywords, sort); //search by author
 				break;
 			case "title":
-				result = BooksDB.searchByTitle(keywords, sort, login); //search by title
+				result = new Book().searchByTitle(keywords, sort, User.trustedUsersSQL(login)); //search by title
 				break;
 			case "genre":
 //				result = BooksDB.searchByGenre(keywords, sort); //search by genre
@@ -251,28 +252,35 @@ public class BooksConsole {
 					return false;
 				}
 				Connector con = new Connector();
-				PreparedStatement prep = con.con.prepareStatement("SELECT ISBN FROM Books WHERE ISBN=?");
-				prep.setString(1, isbn.trim());
-				ResultSet rs = prep.executeQuery();
-				ResultSetMetaData rsmd = rs.getMetaData();
-				int numCols = rsmd.getColumnCount();
-				boolean alreadyExists = false;
-				while(rs.next())
+				Book b = new Book();
+				if(!b.Query("ISBN", "Where ISBN='"+isbn.trim()+"'", "").isEmpty())
 				{
-					alreadyExists = true;
 					System.out.println("  ##  That book is already in the database.  ##  ");
-					 for (int i=1; i<=numCols;i++)
-						 System.out.print(rsmd.getColumnLabel(i)+":\t"+rs.getString(i)+"\t");
-					 System.out.println();
-				}
-				
-				if(alreadyExists)
-				{
-					rs.close();
-					prep.close();
-					con.closeConnection();
+					System.out.println(b.lastQueryToString());
 					return false;
 				}
+//				PreparedStatement prep = con.con.prepareStatement("SELECT ISBN FROM Books WHERE ISBN=?");
+//				prep.setString(1, isbn.trim());
+//				ResultSet rs = prep.executeQuery();
+//				ResultSetMetaData rsmd = rs.getMetaData();
+//				int numCols = rsmd.getColumnCount();
+//				boolean alreadyExists = false;
+//				while(rs.next())
+//				{
+//					alreadyExists = true;
+//					System.out.println("  ##  That book is already in the database.  ##  ");
+//					 for (int i=1; i<=numCols;i++)
+//						 System.out.print(rsmd.getColumnLabel(i)+":\t"+rs.getString(i)+"\t");
+//					 System.out.println();
+//				}
+//				
+//				if(alreadyExists)
+//				{
+//					rs.close();
+//					prep.close();
+//					con.closeConnection();
+//					return false;
+//				}
 				System.out.println("Enter the Title:");
 				String title = "";
 				while ((title = in.readLine().trim()) == null && title.length() == 0);
@@ -318,7 +326,7 @@ public class BooksConsole {
 				while ((format = in.readLine().trim()) == null && format.length() == 0);
 				
 				//PRICE
-				double price = 0;
+				String price = "";
 				while(true)
 				{
 					boolean bad = false;
@@ -332,7 +340,7 @@ public class BooksConsole {
 						bad = true;
 					}
 					try {
-						price = Double.parseDouble(_price);
+						Double.parseDouble(_price);
 					} catch(Exception e)
 					{
 						System.out.println("Please enter a valid dollar value, without the '$' symbol.");
@@ -340,42 +348,52 @@ public class BooksConsole {
 					}
 					if(!bad)
 					{
+						price = _price;
 						break;
 					}
 				}
 				
 				//COPIES
-				int copies = 0;
+				int _copies = 0;
+				String copies = "";
 				while(true)
 				{
 					System.out.println("Enter the number of copies:");
-					String _copies = "";
-					while ((_copies = in.readLine().trim()) == null && _copies.length() == 0);
+					while ((copies = in.readLine().trim()) == null && copies.length() == 0);
 					try {
-						copies = Integer.parseInt(_copies);
+						_copies = Integer.parseInt(copies);
 					} catch(Exception e)
 					{
 						System.out.println("Please enter a valid integer value.");
 						continue;
 					}
-					if(copies < 0)
+					if(_copies < 0)
 					{
 						System.out.println("Please enter a positive (or 0) integer value.");
 						continue;
 					}
+					copies = ""+_copies;
 					break;
 				}
+				b = new Book(isbn, title, publisher, year, language, format, price, copies);
+				HashMap<String, String> result = b.Insert();
 				
-				boolean success = BooksDB.newBook(isbn, title, publisher, year, language, format, price, copies);
-				
-				if(success)
+				if(result != null)
 				{
 					for(Author a : authors)
 					{
 						if(a.Insert() != null)
 						{
-							a.insertAuthorBookRelation(isbn);
+							Authored_By ab = new Authored_By(b.getISBN(), a.getAid());
+							if(ab.Insert() != null)
+							{
+								return true;
+							}
+							System.out.println("There was an error adding the Author/ISBN pair to Authored_By");
+							return true;
 						}
+						System.out.println("There was an error adding the Author to Authors");
+						return true;
 					}
 					return true;
 				}

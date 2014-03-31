@@ -26,4 +26,5 @@ public class Authored_By extends DatabaseModel {
 		colValPairs.put("aid", aid);
 		primaryKeyColumns.addAll(columns);
 	}
+	
 }
