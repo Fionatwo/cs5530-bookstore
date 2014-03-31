@@ -16,24 +16,24 @@ public class DatabaseModel {
 	protected String table;
 	protected HashSet<String> columns;
 	protected HashMap<String, String> colValPairs;
-	protected String keyVal;
 	protected HashSet<String> primaryKeyColumns;
 	protected HashMap<String, String> primaryKey;
-	protected String keyColumn;
+	protected ArrayList<HashMap<String, String>> lastQueryResult;
 	
 	public DatabaseModel(){
 		this.colValPairs = new HashMap<String, String>();
 		this.columns = new HashSet<String>();
+		this.primaryKeyColumns = new HashSet<String>();
 	}
 	
-	public DatabaseModel(String table, String keyColumn, HashSet<String> columns, HashMap<String, String> colValPair) {
+	public DatabaseModel(String table, String keyColumn, HashSet<String> primaryKeyColumns, HashSet<String> columns, HashMap<String, String> colValPair) {
 		this.columns = columns;
 		this.table = table;
 		this.colValPairs = colValPair;
-		this.keyColumn = keyColumn;
+		this.primaryKeyColumns = primaryKeyColumns;
 	}
 
-	public String Insert() {
+	public HashMap<String, String> Insert() {
 		String sql = "insert into ";
 		sql += table;
 		sql += " (" + columnsToString(columns) + ")";
@@ -74,11 +74,8 @@ public class DatabaseModel {
 	 * described by this class
 	 * @return key column value as a string
 	 */
-	public String queryKey() {
-		HashSet<String> cols = new HashSet<String>();
- 		cols.add(keyColumn);
- 		HashMap<String, String> result = Query(cols, buildWhereClause()).get(0);
- 		return keyVal = result.get(keyColumn);
+	public HashMap<String, String> queryKey() {
+ 		return primaryKey = Query(primaryKeyColumns, buildWhereClause(), "").get(0);
 	}
 	
 	
@@ -94,22 +91,21 @@ public class DatabaseModel {
 	 * @param whereClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
-	private ArrayList<HashMap<String, String>> Query_Work(HashSet<String> cols, String whereClause) {
+	private ArrayList<HashMap<String, String>> Query_Work(HashSet<String> cols, String whereClause, String orderClause) {
 		try{
 			String sql = "select ";
 			sql += columnsToString(cols);
 			sql += " from " + table;
 			sql += " " + whereClause;
+			sql += " " + orderClause;
 
 			System.out.println("executing: " + sql);
 			Connector con = new Connector();
 			PreparedStatement prep = con.con.prepareStatement(sql);
-			ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+			lastQueryResult = new ArrayList<HashMap<String, String>>();
 			ResultSet rs = prep.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
-			Iterator<String> iCols = cols.iterator();
 			int numCols = rsmd.getColumnCount();
-			int count = 0;
 			while (rs.next())
 			{
 				HashMap<String, String> colVal = new HashMap<String, String>();
@@ -117,15 +113,14 @@ public class DatabaseModel {
 				{
 					colVal.put(rsmd.getColumnLabel(i), rs.getString(i));
 				}
-				results.add(colVal);
-				count++;
+				lastQueryResult.add(colVal);
 			}
 
 			//close connection
 			prep.close();
 			con.closeConnection();
 
-			return results;
+			return lastQueryResult;
 		} catch (Exception e)
 		{
 			System.err.println("Unable to execute sql. The error is as follows,\n");
@@ -142,8 +137,8 @@ public class DatabaseModel {
 	 * @param whereClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
-	public ArrayList<HashMap<String, String>> Query(String whereClause) {
-		return Query_Work(columns, whereClause);
+	public ArrayList<HashMap<String, String>> Query(String whereClause, String orderClause) {
+		return Query_Work(columns, whereClause, orderClause);
 	}
 
 	/**
@@ -156,8 +151,8 @@ public class DatabaseModel {
 	 * @param whereClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
-	public ArrayList<HashMap<String, String>> Query(HashSet<String> overrideColumns, String whereClause) {
-		return Query_Work(overrideColumns, whereClause);
+	public ArrayList<HashMap<String, String>> Query(HashSet<String> overrideColumns, String whereClause, String orderClause) {
+		return Query_Work(overrideColumns, whereClause, orderClause);
 	}
 	
 	/**
@@ -171,10 +166,89 @@ public class DatabaseModel {
 	 * @param whereClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
-	public ArrayList<HashMap<String, String>> Query(String simpleColumns, String whereClause) {
+	public ArrayList<HashMap<String, String>> Query(String simpleColumns, String whereClause, String orderClause) {
 		HashSet<String> cols = new HashSet<String>();
 		cols.add(simpleColumns);
-		return Query_Work(cols, whereClause);
+		return Query_Work(cols, whereClause, orderClause);
+	}
+	
+	/**
+	 * The last query result is always stored in lastQueryResult.
+	 * This will return a multi-line string in a readable format
+	 * of the query result Listing each result row # followed by
+	 * the columns and their respective values.
+	 * @return string of last query result
+	 */
+	public String lastQueryToString() {
+		String out = "";
+		Iterator<HashMap<String, String>> i = lastQueryResult.iterator();
+		int count = 1;
+		while(i.hasNext())
+		{
+			HashMap<String, String> row = i.next();
+			out += "\nResult #" + count + ":\n";
+			Iterator<String> iCol = row.keySet().iterator();
+			while(iCol.hasNext())
+			{
+				String col = iCol.next();
+				out += col + ": " + row.get(col) + "\n";
+			}
+			count++;
+		}
+		return out;
+	}
+	
+	/**
+	 * Generates an Order By clause for a query given a HashSet<String>.
+	 * Each string should represent a column label as described by the 
+	 * class. Column labels are case sensitive.
+	 * 
+	 * @param cols
+	 * @return String order by clause
+	 */
+	public String generateOrderClause(HashSet<String> cols) {
+		if(cols.isEmpty())
+		{
+			return "";
+		}
+		
+		String orderClause = " ORDER BY ";
+		
+		Iterator<String> iCol = cols.iterator();
+		while(iCol.hasNext())
+		{
+			orderClause += "'" + iCol.next().trim() + "',";
+		}
+		
+		int i = orderClause.lastIndexOf(',');
+		return orderClause.substring(0, i);
+	}
+	
+	/**
+	 * Generates an Order By clause given a simple string.
+	 * The string can be any number of Column labels separated
+	 * by commas.  Column labels are case sensitive.
+	 *
+	 * @param colString
+	 * @return String order by clause
+	 */
+	public String generateOrderClause(String colString) {
+		if(colString.isEmpty() || colString == "")
+		{
+			return "";
+		}
+		
+		String[] cols = colString.split(",");
+		
+		String orderClause = " ORDER BY ";
+		
+		for(String s : cols)
+		{
+			orderClause += "'" + s.trim() + "',";
+		}
+		
+		int i = orderClause.lastIndexOf(',');
+		return orderClause.substring(0, i);
 	}
 	
 	/**

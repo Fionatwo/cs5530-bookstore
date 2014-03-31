@@ -76,7 +76,7 @@ public class BooksConsole {
 					while(iBook.hasNext())
 					{
 						Book b = iBook.next();
-						System.out.println(b.toString(true));
+//						System.out.println(b.toString(true));
 					}
 					break;
 				case 7:
@@ -208,7 +208,7 @@ public class BooksConsole {
 			while(iBooks.hasNext())
 			{
 				Book b = iBooks.next();
-				System.out.println(count + "\t" + b.toString(true));
+//				System.out.println(count + "\t" + b.toString(true));
 			}
 			
 			//Prompt to continue

@@ -32,7 +32,7 @@ public class testdriver {
 //			DatabaseModel db = new DatabaseModel("Books", cols, vals);
 			
 			
-			AuthorInsert();
+			AuthorQuery();
 			
 			
 		}
@@ -42,27 +42,37 @@ public class testdriver {
 		}
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * AUTHORS * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public static void AuthorInsert() {
-		Author a = new Author("Guillermo", "Del Toro");
+		Author a = new Author("Yann", "Martel");
 		System.out.println(a.Insert());
 	}
 	
 	public static void AuthorQuery() {
 		Author a = new Author();
-		ArrayList<HashMap<String, String>> r = a.Query("*", "where FirstName like 'Herman'");
-		Iterator<HashMap<String, String>> i = r.iterator();
-		int count = 1;
-		while(i.hasNext())
-		{
-			HashMap<String, String> row = i.next();
-			System.out.println("Result " + count + ":");
-			Iterator<String> iCol = row.keySet().iterator();
-			while(iCol.hasNext())
-			{
-				String col = iCol.next();
-				System.out.println(col + ": " + row.get(col));
-			}
-		}
+		HashSet<String> cols = new HashSet<String>();
+		cols.add("Title");
+		a.Query("*", "where FirstName like '%Herman%'", a.generateOrderClause(cols));
+		System.out.println(a.lastQueryToString());
+		
+		a.Query("*", "where FirstName like '%Herman%'", a.generateOrderClause("Title"));
+		System.out.println(a.lastQueryToString());
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * BOOKS * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public static void BookInsert() {
+		Book b = new Book("9780156027328", "Life of Pi", "Houghton Mifflin Harcourt", "2003", "English", "soft", "12.74", "60");
+		System.out.println(b.Insert());
+	}
+	
+	public static void BookQuery() {
+		Book b = new Book();
+		ArrayList<HashMap<String, String>> r = b.Query("*", "where Title like '%the%'");
+		System.out.println(b.lastQueryToString());
 	}
 
 }

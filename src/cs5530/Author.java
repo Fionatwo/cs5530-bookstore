@@ -24,7 +24,6 @@ public class Author extends DatabaseModel{
 		table = "Authors";
 		columns.add("FirstName");
 		columns.add("LastName");
-		keyColumn = "aid";
 	}
 	
 	/**
@@ -42,7 +41,7 @@ public class Author extends DatabaseModel{
 		columns.add("LastName");
 		colValPairs.put("FirstName", first);
 		colValPairs.put("LastName", last);
-		keyColumn = "aid";
+		primaryKeyColumns.add("aid");
 	}
 	
 	/**
