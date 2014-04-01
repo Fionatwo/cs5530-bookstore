@@ -32,6 +32,30 @@ public class DatabaseModel {
 		this.colValPairs = colValPair;
 		this.primaryKeyColumns = primaryKeyColumns;
 	}
+	
+	public boolean Set(String column, String value) {
+		try 
+		{
+			colValPairs.get(column);
+			colValPairs.put(column, value);
+			return true;
+		} 
+		catch(Exception e)
+		{
+			return false;
+		}
+	}
+	
+	public String Get(String column) {
+		try 
+		{
+			return colValPairs.get(column);
+		} 
+		catch(Exception e)
+		{
+			return null;
+		}
+	}
 
 	public HashMap<String, String> Insert() {
 		String sql = "insert into ";

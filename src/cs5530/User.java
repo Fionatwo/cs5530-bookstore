@@ -1,14 +1,10 @@
 package cs5530;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import cs5530.db.DatabaseModel;
-import cs5530.db.UsersDB;
 
 public class User extends DatabaseModel{
 	
-	String login, first, last, phone, address, ccnum;
+//	String login, first, last, phone, address, ccnum;
 	
 	public User() {
 		table = "Users";
@@ -31,7 +27,8 @@ public class User extends DatabaseModel{
 		
 		colValPairs.put("Login", login);
 		colValPairs.put("Password", password);
-		this.login = colValPairs.get("Login");
+		colValPairs.put("isManager", "0");
+//		this.login = colValPairs.get("Login");
 	}
 	
 	public User(String login, String password, String first, String last, String phone, String address, String ccnum) {
@@ -46,7 +43,6 @@ public class User extends DatabaseModel{
 		columns.add("isManager");
 		primaryKeyColumns.add("Login");
 		
-		
 		colValPairs.put("Login", login);
 		colValPairs.put("Password", password);
 		colValPairs.put("FirstName", first);
@@ -55,6 +51,19 @@ public class User extends DatabaseModel{
 		colValPairs.put("Address" , address);
 		colValPairs.put("CCNum" , ccnum);
 		colValPairs.put("isManager", "0");
+	}
+	
+	public boolean isManager() {
+		try 
+		{
+			String m = colValPairs.get("isManager");
+			Boolean.parseBoolean(m);
+			return true;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
 	}
 	
 	public boolean checkLoginExists() {

@@ -33,9 +33,9 @@ public class testdriver {
 			
 			
 //			AuthorGetBooksBy();
-//			searchByAuthor();
+			searchByAuthor();
 //			searchByTitle();
-			searchByGenre();
+//			searchByGenre();
 //			uniqueLogin();
 			
 		}
@@ -90,21 +90,21 @@ public class testdriver {
 		System.out.println(b.lastQueryToString());
 		
 		User u = new User("bush", "");
-		b.searchByAuthorTrusted("Fitzgerald", 3, User.trustedUsersSQL(u.login));
+		b.searchByAuthorTrusted("Fitzgerald", 3, User.trustedUsersSQL(u.Get("Login")));
 		System.out.println(b.lastQueryToString());
 	}
 	
 	public static void searchByTitle() {
 		Book b = new Book();
 		User u = new User("bush", "");
-		b.searchByTitleTrusted("", 3, User.trustedUsersSQL(u.login));
+		b.searchByTitleTrusted("", 3, User.trustedUsersSQL(u.Get("Login")));
 		System.out.println(b.lastQueryToString());
 	}
 	
 	public static void searchByGenre() {
 		Book b = new Book();
 		User u = new User("bush", "");
-		b.searchByGenreTrusted("jazz", 3, User.trustedUsersSQL(u.login));
+		b.searchByGenreTrusted("jazz", 3, User.trustedUsersSQL(u.Get("Login")));
 		System.out.println(b.lastQueryToString());
 		
 		b.searchByGenre("teen", 2);
@@ -132,4 +132,6 @@ public class testdriver {
 		User u = new User("alex", "");
 		System.out.println(u.checkLoginExists());
 	}
+	
+	
 }

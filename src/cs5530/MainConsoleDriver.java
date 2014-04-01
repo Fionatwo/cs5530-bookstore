@@ -18,7 +18,7 @@ import cs5530.db.UsersDB;
  */
 public class MainConsoleDriver {
 	
-	static UsersDB user = new UsersDB();
+	static User user = new User();
 
 	/**
 	 * @param args
@@ -78,7 +78,7 @@ public class MainConsoleDriver {
 				 /* LOGIN */
 				 if(Login())
 				 {
-					 if(user.isManager)
+					 if(user.Get("isManager"))
 					 {
 						 LoggedInRun_Manager();
 					 }
@@ -395,7 +395,7 @@ public class MainConsoleDriver {
 				 System.out.println("  ##  Your password entries didn't match  ##  ");
 				 RegisterNewUserFailMenu();
 			 }
-			 user = new UsersDB(uname, passwd);
+			 user = new User(uname, passwd);
 			 return true;
 		}
 		catch(Exception e)
