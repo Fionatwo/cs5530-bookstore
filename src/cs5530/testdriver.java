@@ -33,10 +33,11 @@ public class testdriver {
 			
 			
 //			AuthorGetBooksBy();
-			searchByAuthor();
+//			searchByAuthor();
 //			searchByTitle();
 //			searchByGenre();
 //			uniqueLogin();
+			checkManager();
 			
 		}
 		catch (Exception e)
@@ -131,6 +132,12 @@ public class testdriver {
 	public static void uniqueLogin() {
 		User u = new User("alex", "");
 		System.out.println(u.checkLoginExists());
+	}
+	
+	public static void checkManager() {
+		User u = new User("alex", "");
+		u.Login("alex", "cheese");
+		System.out.println(u.isManager());
 	}
 	
 	

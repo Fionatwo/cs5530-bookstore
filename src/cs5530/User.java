@@ -1,5 +1,8 @@
 package cs5530;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import cs5530.db.DatabaseModel;
 
 public class User extends DatabaseModel{
@@ -23,6 +26,7 @@ public class User extends DatabaseModel{
 		table = "Users";
 		columns.add("Login");
 		columns.add("Password");
+		columns.add("isManager");
 		primaryKeyColumns.add("Login");
 		
 		colValPairs.put("Login", login);
@@ -57,8 +61,10 @@ public class User extends DatabaseModel{
 		try 
 		{
 			String m = colValPairs.get("isManager");
-			Boolean.parseBoolean(m);
-			return true;
+			int i = Integer.parseInt(m);
+			if(i < 1)
+				return true;
+			return false;
 		}
 		catch(Exception e)
 		{
@@ -67,7 +73,31 @@ public class User extends DatabaseModel{
 	}
 	
 	public boolean checkLoginExists() {
-		return !this.Query("Login", "where Login='"+colValPairs.get("Login")+"'", "").isEmpty();
+		return !Query("Login", "where Login='"+colValPairs.get("Login")+"'", "").isEmpty();
+	}
+	
+	public boolean checkLoginExists(String login) {
+		return !Query("Login", "where Login='"+login+"'", "").isEmpty();
+	}
+	
+	public boolean Login(String login, String pword) {
+		try
+		{
+			ArrayList<HashMap<String, String>> result = 
+					Query("Login, Password, isManager", "where Login='"+login+"' and Password='"+pword+"'", "");
+			if(result.isEmpty())
+			{
+				return false;
+			}
+			colValPairs.put("Login", result.get(0).get("Login"));
+			colValPairs.put("Password", result.get(0).get("Password"));
+			colValPairs.put("isManager", result.get(0).get("isManager"));
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 	}
 	
 	private String trustedUsersSQL() {

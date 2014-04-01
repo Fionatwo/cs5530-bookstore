@@ -178,7 +178,7 @@ public class MainConsoleDriver {
 			 	 break;
 		 	 case 99:
 		 	 	 /* RETURN TO MANAGER MENU */
-		 	 	 if(user.isManager)
+		 	 	 if(user.isManager())
 		 	 	 {
 		 	 	 	LoggedInRun_Manager();
 		 	 	 	break;
@@ -295,7 +295,7 @@ public class MainConsoleDriver {
 	*/
 	private static void BrowseBooksRun() {
 		
-		int c = BooksConsole.browseMain(user.login);
+		int c = BooksConsole.browseMain(user.Get("Login"));
 		
 		switch(c) 
 		{
@@ -381,7 +381,7 @@ public class MainConsoleDriver {
 			 System.out.println("  -- Register New User --  ");
 			 System.out.println("Please enter a username");
 			 while ((uname = in.readLine()) == null && uname.length() == 0);
-			 if(user.checkLoginExists(uname))
+			 if(user.checkLoginExists())
 			 {
 				 System.out.println("  ##  Sorry, that user name is taken. Try another?  ##  ");
 				 RegisterNewUserFailMenu();
@@ -466,10 +466,9 @@ public class MainConsoleDriver {
 				while ((uname = in.readLine()) == null && uname.length() == 0);
 				System.out.println("Please enter your password:");
 				while ((passwd = in.readLine()) == null && passwd.length() == 0);
-				if(user.VerifyLogin(uname, passwd))
+				if(user.Login(uname, passwd))
 				{
 					System.out.println("Welcome back " + uname + "!");
-					user.login = uname;
 					return true;
 				}
 				System.out.println("  ## Incorrect user name or password ##  ");
