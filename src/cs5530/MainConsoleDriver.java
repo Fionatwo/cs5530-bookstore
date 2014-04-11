@@ -78,7 +78,7 @@ public class MainConsoleDriver {
 				 /* LOGIN */
 				 if(Login())
 				 {
-					 if(user.Get("isManager"))
+					 if(user.isManager())
 					 {
 						 LoggedInRun_Manager();
 					 }

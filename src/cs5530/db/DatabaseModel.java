@@ -154,11 +154,12 @@ public class DatabaseModel {
 	}
 
 	/**
-	 * The basic Query function that only takes a where clause as a string.
+	 * The basic Query function that only takes a where clause as a string,
+	 * and an order clause as a string (order by).
 	 * It will query the database on the core columns described by the class.
 	 * It returns an ArrayList of HashMaps.  Each HashMap is a map of Column
 	 * value pairs and each occurrence in the ArrayList is a row.
-	 * @param whereClause
+	 * @param whereClause, orderClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
 	public ArrayList<HashMap<String, String>> Query(String whereClause, String orderClause) {
@@ -172,7 +173,7 @@ public class DatabaseModel {
 	 * Remember that the strings are case sensitive.
 	 * It returns an ArrayList of HashMaps.  Each HashMap is a map of Column
 	 * value pairs and each occurrence in the ArrayList is a row.
-	 * @param whereClause
+	 * @param overrideColumns, whereClause, orderClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
 	public ArrayList<HashMap<String, String>> Query(HashSet<String> overrideColumns, String whereClause, String orderClause) {
@@ -187,7 +188,7 @@ public class DatabaseModel {
 	 * Remember that the strings are case sensitive.
 	 * It returns an ArrayList of HashMaps.  Each HashMap is a map of Column
 	 * value pairs and each occurrence in the ArrayList is a row.
-	 * @param whereClause
+	 * @param simpleColumns, whereClause, orderClause
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
 	public ArrayList<HashMap<String, String>> Query(String simpleColumns, String whereClause, String orderClause) {
@@ -202,8 +203,7 @@ public class DatabaseModel {
 	 * It returns an ArrayList of HashMaps.  Each HashMap is a map of Column
 	 * value pairs and each occurrence in the ArrayList is a row.
 	 * 
-	 * @param cols
-	 * @param whereClause
+	 * @param sql, comma-separated column names as a string
 	 * @return ArrayList of HashMaps, the result data of the query
 	 */
 	public ArrayList<HashMap<String, String>> CustomQuery(String sql) {
@@ -330,17 +330,17 @@ public class DatabaseModel {
 	 * @param overrideColumns
 	 * @return String sequence of comma separated column labels
 	 */
-	private String columnsToString(HashSet<String> overrideColumns) {
+	private String columnsToString(HashSet<String> _columns) {
 		String colString = " ";
-		if(overrideColumns.isEmpty())
+		if(_columns.isEmpty())
 		{
 			return "";
 		}
-		else if(columns.contains("*"))
+		else if(_columns.contains("*"))
 		{
 			return " * ";
 		}
-		Iterator<String> iCol = overrideColumns.iterator();
+		Iterator<String> iCol = _columns.iterator();
 		while(iCol.hasNext())
 		{
 			colString += iCol.next().trim() + ",";

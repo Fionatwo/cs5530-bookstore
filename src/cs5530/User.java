@@ -63,8 +63,8 @@ public class User extends DatabaseModel{
 			String m = colValPairs.get("isManager");
 			int i = Integer.parseInt(m);
 			if(i < 1)
-				return true;
-			return false;
+				return false;
+			return true;
 		}
 		catch(Exception e)
 		{

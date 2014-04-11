@@ -140,5 +140,24 @@ public class testdriver {
 		System.out.println(u.isManager());
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * GENRE * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public static void booksByGenre() {
+		String s = "jazz age";
+		Genre g = new Genre(s);
+		ArrayList<HashMap<String, String>> r = g.Query("gid", "where Genre like '%"+s+"%'", "");
+		String gid = r.get(0).get("gid");
+		Is_Genre ig = new Is_Genre();
+		r = ig.Query("ISBN", "where gid='"+gid+"'", "");
+		
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * KEYWORD * * * * * * * * * * * * * * * */
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public static void booksWithKeyword() {
+		
+	}
 	
 }
