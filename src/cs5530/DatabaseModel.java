@@ -1,4 +1,4 @@
-package cs5530.db;
+package cs5530;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import cs5530.Connector;
 
 public class DatabaseModel {
 	
@@ -236,6 +234,16 @@ public class DatabaseModel {
 			System.err.println(e.getMessage());
 			return null;
 		}
+	}
+	
+	public ArrayList<HashMap<String, String>> QueryFieldEquals(String field, String match) {
+		String sql = "Select * from " + table + " where "+field.trim()+"='"+match.trim()+"'";
+		return CustomQuery(sql);
+	}
+
+	public ArrayList<HashMap<String, String>> QueryFieldLike(String field, String match) {
+		String sql = "Select * from " + table + " where "+field.trim()+" like '%"+match.trim()+"%'";
+		return CustomQuery(sql);
 	}
 	
 	/**

@@ -6,8 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import cs5530.db.DatabaseModel;
-
 public class Order extends DatabaseModel {
 	
 	String oid, login, date;

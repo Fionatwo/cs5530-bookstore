@@ -4,8 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cs5530.db.DatabaseModel;
-
 
 /**
  * 

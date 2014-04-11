@@ -3,8 +3,6 @@ package cs5530;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cs5530.db.DatabaseModel;
-
 public class User extends DatabaseModel{
 	
 //	String login, first, last, phone, address, ccnum;

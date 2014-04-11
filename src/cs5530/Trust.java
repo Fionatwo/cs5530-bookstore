@@ -4,8 +4,6 @@ package cs5530;
 //import java.util.HashMap;
 //import java.util.Map;
 
-import cs5530.db.DatabaseModel;
-
 
 /**
  * 

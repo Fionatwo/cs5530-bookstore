@@ -1,4 +1,4 @@
-package cs5530.db;
+package legacy;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -3,7 +3,6 @@
  */
 package cs5530;
 
-import cs5530.db.DatabaseModel;
 
 /**
  * @author Alex Stout - u0583813

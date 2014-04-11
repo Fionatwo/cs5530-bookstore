@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cs5530.db.*;
+import legacy.*;
 
 /**
  * Represents an Author object.  Authors are separate entities from the Books table.

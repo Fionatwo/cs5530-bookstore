@@ -2,8 +2,7 @@ package cs5530;
 
 import java.util.*;
 
-import cs5530.db.DatabaseModel;
-import cs5530.db.UsersDB;
+import legacy.UsersDB;
 
 public class testdriver {
 

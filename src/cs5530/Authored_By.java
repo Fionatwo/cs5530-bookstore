@@ -1,6 +1,5 @@
 package cs5530;
 
-import cs5530.db.DatabaseModel;
 
 public class Authored_By extends DatabaseModel {
 	public String isbn;

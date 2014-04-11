@@ -3,7 +3,8 @@ package cs5530;
 
 import java.sql.*;
 import java.io.*;
-import cs5530.db.UsersDB;
+
+import legacy.UsersDB;
 
 
 /**
